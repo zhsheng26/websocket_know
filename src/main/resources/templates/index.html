@@ -1,32 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script type="text/javascript" src="/static/stomp.min.js"></script>
+    <script type="text/javascript" src="/static/sockjs.min.js"></script>
 </head>
 <body>
 <script>
     function sendMessage() {
-        var url = "ws://" + window.location.host + '/macro';
-        var socket = new WebSocket(url);
-        socket.onopen = function () {
-            console.log("Opening");
-            sayMarco();
-        };
-        socket.onmessage = function (ev) {
-            console.log("Received message:", ev.data);
-            setTimeout(function () {
-                sayMarco()
-            }, 2000)
-        };
-        socket.onclose = function () {
-            console.log("Closing");
-        };
-
-        function sayMarco() {
-            console.log("Sending Macro");
-            socket.send("Macro!")
-        }
+        var url = "http://" + window.location.host + "/marco";
+        var sock = new SockJS(url);
+        var stomp = Stomp.over(sock);
+        var msg = JSON.stringify({'message': '你好/app/macro'});
+        stomp.connect('guest', 'guest', function () {
+            stomp.send('/app/macro', {}, msg)
+        })
     }
 
 </script>
